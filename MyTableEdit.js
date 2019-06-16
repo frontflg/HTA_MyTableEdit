@@ -250,7 +250,7 @@ function updPage(updWhere) {
         //  strDoc += '<td><textarea rows="3" cols="144" id="'
         //         + rs(i).Name + '">' + rs2(0).Value + '</textarea></td>';
         // ↓ textarea を拾うようにはできていないので、INPUTで255文字までとする。
-            strDoc += '<td><input type="text"   id="' + rs(i).Name
+            strDoc += '<td><input type="text" id="' + rs(i).Name
                    + '" value="' + rs2(0).Value + '" size=144" maxlength=255"></td>';
             rs2.Close();
         } else if (rs(i).Type == 3 || rs(i).Type == 16) {
@@ -401,6 +401,9 @@ function updRec() {
       mySql += $(this).attr('id') + " = '" + $(this).val() + "'";
     }
   });
+// $('#lst03 textarea').each(function() {         // ゆくゆくはtextareaも拾いたい
+//   mySql += "," + $(this).attr('id') + " = '" + $(this).val() + "'";
+// }
   if (errFlg != 0) {
  // alert('エラーがあります、再入力してください！');
     return;
@@ -480,6 +483,10 @@ function insRec() {
     }
     i = i + 1;
   });
+// $('#lst03 textarea').each(function() {         // ゆくゆくはtextareaも拾いたい
+//   mySql  += "," + $(this).attr('id');
+//   mySql2 += ",'" + $(this).val() + "'";
+// }
   if (errFlg != 0) {
  // alert('エラーがあります、再入力してください！');
     return;
