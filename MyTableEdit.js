@@ -241,15 +241,18 @@ function updPage(updWhere) {
         } else if (rs(i).Type == 203) {
       //    strDoc += '<td><textarea rows="4" cols="144" id="'
       //            + rs(i).Name + '">' + rs(i).Value + '</textarea></td>';
-      // リストだとうまく行くのに個別にSELECTするとTEXT型がとって来れない（valueが常にnull）、何故？
-            strDoc += '<td>NAME = ' + rs(i).Name
-                    + ' VALUE = ' + rs(i).Value
-                    + ' PRECISION = ' + rs(i).Precision
-                    + ' SCALE = ' + rs(i).NumericScale
-                    + ' TYPE = ' + rs(i).Type
-                    + ' DEFSIZE = ' + rs(i).DefinedSize
-                    + ' ACTSIZE = ' + rs(i).ActualSize
-                    + '</td>';
+        // ↑リストだとうまく行くのに個別にSELECTするとTEXT型がとって来れない（valueが常にnull）、何故？
+        // なので（苦肉の策）、もう一回（再度、項目単位のSELECTし）、SUBSTRで先頭255文字だけ救うこととした。
+        // まだ更新は出来ない。
+            var rs2 = new ActiveXObject('ADODB.Recordset');
+            var mySql2 = "SELECT SUBSTR(" + rs(i).Name + ",1,255) FROM " + updWhere.replace(/★/g, ' = ').replace(/※/g, '\'');
+            rs2.Open(mySql2, cn);
+        //  strDoc += '<td><textarea rows="3" cols="144" id="'
+        //         + rs(i).Name + '">' + rs2(0).Value + '</textarea></td>';
+        // ↓ textarea を拾うようにはできていないので、INPUTで255文字までとする。
+            strDoc += '<td><input type="text"   id="' + rs(i).Name
+                   + '" value="' + rs2(0).Value + '" size=144" maxlength=255"></td>';
+            rs2.Close();
         } else if (rs(i).Type == 3 || rs(i).Type == 16) {
           strDoc += '<td><input type="number" id="' + rs(i).Name
                   + '" value="' + rs(i).Value + '" size="' + Math.round(rs(i).DefinedSize * 1.3)
@@ -314,7 +317,10 @@ function insPage(tblName) {
       } else if (rs(i).Type == 135) {
         strDoc += '<td><input type="datetime" id="' + rs(i).Name + '"></td>';
       } else if (rs(i).Type == 203) {
-        strDoc += '<td><textarea rows="4" cols="144" id="' + rs(i).Name + '"></textarea></td>';
+      // strDoc += '<td><textarea rows="4" cols="144" id="' + rs(i).Name + '"></textarea></td>';
+      // ↓ textarea を拾うようにはできていないので、INPUTで255文字までとする。
+        strDoc += '<td><input type="text"   id="' + rs(i).Name
+                + '" size=144" maxlength=255"></td>';
       } else if (rs(i).Type == 3 || rs(i).Type == 16) {
         strDoc += '<td><input type="number"   id="' + rs(i).Name
                 + '" size="' + Math.round(rs(i).DefinedSize * 1.3)
@@ -354,7 +360,7 @@ function updRec() {
   var mySql = "";
   var errFlg = 0;
   tName = strWhere.slice(0,strWhere.indexOf(" WHERE"));
-  $('#lst03 input').each(function() {
+  $('#lst03 input').each(function() {         // ゆくゆくはtextareaも拾いたい
     if (mySql == "") { 
       mySql += "UPDATE " + tName + " SET ";
     } else {
@@ -383,6 +389,14 @@ function updRec() {
         return false;
       }
       mySql += $(this).attr('id') + " = '" + $(this).val() + "'";
+ // 日付時刻形式(YYYY-MM-DD HH:MM:SS)は未作成
+ // } else if ($(this).attr('type') == "datetime") {
+ //   if ( !isDateTime ( $(this).val()) ) {
+ //     atError ( $(this).attr('id'), '日付時刻形式(YYYY-MM-DD HH:MM:SS)で入力してください！');
+ //     errFlg = 1;
+ //     return false;
+ //   }
+ //   mySql += $(this).attr('id') + " = '" + $(this).val() + "'";
     } else {
       mySql += $(this).attr('id') + " = '" + $(this).val() + "'";
     }
@@ -416,7 +430,7 @@ function insRec() {
   var mySql2 = "";
   var i = 0;
   var errFlg = 0;
-  $('#lst03 input').each(function() {
+  $('#lst03 input').each(function() {      // ゆくゆくはtextareaも拾いたい
     if (mySql == "") { 
       mySql  += "INSERT INTO " + tName + " (";
       mySql2 += ") VALUES (";
@@ -453,7 +467,14 @@ function insRec() {
         return false;
       }
       mySql2 += " '" + $(this).val() + "'";
-    // 日付時刻形式(YYYY-MM-DD HH:MM:SS)は未作成
+ // 日付時刻形式(YYYY-MM-DD HH:MM:SS)は未作成
+ // } else if ($(this).attr('type') == "datetime") {
+ //   if ( !isDateTime ( $(this).val()) ) {
+ //     atError ( $(this).attr('id'), '日付時刻形式(YYYY-MM-DD HH:MM:SS)で入力してください！');
+ //     errFlg = 1;
+ //     return false;
+ //   }
+ //   mySql += $(this).attr('id') + " = '" + $(this).val() + "'";
     } else {
       mySql2 += " '" + $(this).val() + "'";
     }
@@ -536,7 +557,7 @@ function isTime ( strTime ) {
     }
   }
   var arrayOfTime = strTime.split(':');
-  if (arrayOfTime[0] > 60) { return false; }
+  if (arrayOfTime[0] > 24) { return false; }
   if (arrayOfTime[1] > 60) { return false; }
   if (arrayOfTime.length == 2) { return true; }
   if (arrayOfTime[2] > 60) { return false; }
@@ -544,6 +565,11 @@ function isTime ( strTime ) {
   return true;
 }
 // function isDateTime ( strDateTime ) { // 未作成（未対応）
+//   if (strDateTime == '') return true;
+//   if(!strDateTime.match(/^\d{4}-\d{1,2}-\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}$/)){
+//      return false;
+//   }
+// }
 function atError ( str, msg ) {
   alert(msg);
   $('#' + str).focus();
