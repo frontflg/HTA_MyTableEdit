@@ -225,7 +225,7 @@ function updPage(updWhere) {
           strDoc += '<td>' + rs(i).Value + '</td>';
         }
       } else {
-        if (rs(i).Value == '') {
+        if (rs(i).Value == '' || rs(i).Value == null) {
           if (rs(i).Type == 133) { strDoc += '<td><input type="date" ';
           } else if (rs(i).Type == 134) { strDoc += '<td><input type="time" ';
           } else if (rs(i).Type == 135) { strDoc += '<td><input type="datetime" ';
