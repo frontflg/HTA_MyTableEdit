@@ -8,7 +8,8 @@ function setList() {
   var cn = new ActiveXObject('ADODB.Connection');
   var rs = new ActiveXObject('ADODB.Recordset');
   var mySql = "SELECT TABLE_NAME,TABLE_COMMENT,TABLE_ROWS,DATE_FORMAT(CREATE_TIME,'%Y/%m/%d %H:%i:%s')"
-            + " FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" + tSchema + "'";
+            + " FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" + tSchema + "'"
+            + " AND TABLE_COMMENT <> 'VIEW'";
   cn.Open(tDatSrc);
   try {
     rs.Open(mySql, cn);
@@ -170,6 +171,8 @@ function colPage(tName) {
     strDocR += '</tr>' + strRow + '</tr>';
     rs.MoveNext();
   }
+  $('#tName2').replaceWith('<div id="tName2">' + tName + '</div>');
+  $('#tName3').replaceWith('<div id="tName3">' + tName + '</div>');
   $('#lst02L').replaceWith('<tbody id="lst02L">' + strDocL + '</tbody>');
   $('#lst02R').replaceWith('<tbody id="lst02R">' + strDocR + '</tbody>');
   rs.Close();
@@ -247,19 +250,21 @@ function updPage(updWhere) {
             var rs2 = new ActiveXObject('ADODB.Recordset');
             var mySql2 = "SELECT SUBSTR(" + rs(i).Name + ",1,255) FROM " + updWhere.replace(/★/g, ' = ').replace(/※/g, '\'');
             rs2.Open(mySql2, cn);
-        //  strDoc += '<td><textarea rows="3" cols="144" id="'
+        //  strDoc += '<td><textarea rows="3" cols="142" id="'
         //         + rs(i).Name + '">' + rs2(0).Value + '</textarea></td>';
         // ↓ textarea を拾うようにはできていないので、INPUTで255文字までとする。
             strDoc += '<td><input type="text" id="' + rs(i).Name
-                   + '" value="' + rs2(0).Value + '" size=144" maxlength=255"></td>';
+                   + '" value="' + rs2(0).Value + '" size=142" maxlength=255"></td>';
             rs2.Close();
         } else if (rs(i).Type == 3 || rs(i).Type == 16) {
           strDoc += '<td><input type="number" id="' + rs(i).Name
                   + '" value="' + rs(i).Value + '" size="' + Math.round(rs(i).DefinedSize * 1.3)
                   + '" maxlength="' + rs(i).DefinedSize + '"></td>';
         } else {
+          var colSize = Math.round(rs(i).DefinedSize * 1.3);
+          if (colSize > 142) { colSize = 142; }
           strDoc += '<td><input type="text" id="' + rs(i).Name
-                  + '" value="' + rs(i).Value + '" size="' + Math.round(rs(i).DefinedSize * 1.3)
+                  + '" value="' + rs(i).Value + '" size="' + colSize
                   + '" maxlength="' + rs(i).DefinedSize + '"></td>';
         }
       }

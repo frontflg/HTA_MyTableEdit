@@ -28,16 +28,17 @@
   <style type="text/css">
     * { margin: 10; padding: 10; }
     body {  font-size: 15px; }
-    #fixedTableArea { width: 748px; height: 600px; }
+    #fixedTableArea { width: 748px; height: 615px; }
     #topArea { width: 748px; float: left; overflow: hidden; }
     #bottomArea { width: 748px; height: 590px; overflow-y: scroll; }
-    #fixedTableArea2 { width: 1260px; height: 600px; }
+    #fixedTableArea2 { width: 1260px; height: 595px; }
     #topLeftArea2 { float: left; width: 55px; }
     #topRightArea2 { width: 1205px; float: left; overflow: hidden; }
-    #bottomLeftArea2 { float: left;  width: 55px; height: 512px; overflow: hidden; }
-    #bottomRightArea2 { width: 1205px; height: 530px; overflow: scroll; }
+    #bottomLeftArea2 { float: left;  width: 55px; height: 492px; overflow: hidden; }
+    #bottomRightArea2 { width: 1205px; height: 510px; overflow: scroll; }
+    #fixedTableArea3 { width: 1260px; height: 555px; }
     #topArea3 { width: 1260px; float: left; overflow: hidden; }
-    #bottomArea3 { width: 1260px; height: 545px; overflow-y: scroll; }
+    #bottomArea3 { width: 1260px; height: 535px; overflow-y: scroll; }
     .fixedTable { border-collapse: collapse; table-layout: fixed; width: 100%; }
     .fixedTable td { border: 1px solid #888; overflow: hidden; height: 30px; white-space: nowrap; }
     .fixedTable td.dummyColumn { width: 17px; border: 0px; }
@@ -78,6 +79,7 @@
     </div>
   </div>
   <div id="tab02">
+    <div id="tName2"></div>
     <div id="fixedTableArea2">
       <div id="topLeftArea2">
         <table id="topLeftTable2" class="fixedTable">
@@ -106,9 +108,7 @@
     </div>
   </div>
   <div id="tab03">
-    <button id="insert" onClick="insRec()" value="insert" class="btn btn-info" />登録</button>
-    <button id="update" onClick="updRec()" value="update" class="btn btn-success" />変更</button>
-    <button id="delete" onClick="delRec()" value="delete" class="btn btn-danger" formaction="delete" />削除</button>
+    <div id="tName3"></div>
     <div id="fixedTableArea3" style="margin-top : 5px">
       <div id="topArea3">
         <table id="topTable3" class="fixedTable">
@@ -129,6 +129,9 @@
         </table>
       </div>
     </div>
+    <button id="insert" onClick="insRec()" value="insert" class="btn btn-info" />登録</button>
+    <button id="update" onClick="updRec()" value="update" class="btn btn-success" />変更</button>
+    <button id="delete" onClick="delRec()" value="delete" class="btn btn-danger" formaction="delete" />削除</button>
   </div>
   <script>
     setList();
