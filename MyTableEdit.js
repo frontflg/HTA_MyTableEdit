@@ -292,7 +292,6 @@ function updPage(updWhere) {
         }
       }
       strDoc += '</tr>';
-      rs.MoveNext();
     }
   }
   $('#lst03').replaceWith('<tbody id="lst03">' + strDoc + '</tbody>');
