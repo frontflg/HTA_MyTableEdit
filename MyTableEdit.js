@@ -194,7 +194,9 @@ function colPage(tName) {
   }
   $('#tName2').replaceWith('<div id="tName2">' + tName + '</div>');
   $('#tName3').replaceWith('<div id="tName3">' + tName + '</div>');
-  $('#reCol').replaceWith('<input type="button" style="height:27px;" value="再検索" onClick="colPage(\'' + tName + '\')">');
+  $('#reCol').replaceWith('<input type="button" style="height:27px;" value="再検索" onClick="colPage(\'' + tName + '\')">'
+                      + '　<input type="button" style="height:27px;" value="CSV出力" onClick="csvOut()">');
+                   // + '　<b><a id="download" href="#" onclick="csvOut()">CSVファイルダウンロード</a></b>');
   $('#lst02L').replaceWith('<tbody id="lst02L">' + strDocL + '</tbody>');
   $('#lst02R').replaceWith('<tbody id="lst02R">' + strDocR + '</tbody>');
   rs.Close();
@@ -248,7 +250,10 @@ function updPage(updWhere) {
           strDoc += '<td>' + rs(i).Value + '</td>';
         }
       } else {
-        if (rs(i).Value == '' || rs(i).Value == null) {
+        if (rs(i).Value == 0) { 
+       // alert('Value:' + rs(i).Value + ' Type:' + rs(i).Type);
+          strDoc += '<td><input type="text" value="0" id="' + rs(i).Name + '"></td>';
+        } else if (rs(i).Value == '' || rs(i).Value == null) {
           if (rs(i).Type == 133) { strDoc += '<td><input type="date" ';
           } else if (rs(i).Type == 134) { strDoc += '<td><input type="time" ';
           } else if (rs(i).Type == 135) { strDoc += '<td><input type="datetime" ';
@@ -280,7 +285,8 @@ function updPage(updWhere) {
                    + '" value="' + rs2(0).Value + '" size=142" maxlength=255"></td>';
             rs2.Close();
         } else if (rs(i).Type == 3 || rs(i).Type == 16) {
-          strDoc += '<td><input type="number" id="' + rs(i).Name
+       // strDoc += '<td><input type="number" id="' + rs(i).Name
+          strDoc += '<td><input type="text" id="' + rs(i).Name
                   + '" value="' + rs(i).Value + '" size="' + Math.round(rs(i).DefinedSize * 1.3)
                   + '" maxlength="' + rs(i).DefinedSize + '"></td>';
         } else {
@@ -577,6 +583,43 @@ function delRec() {
   $('#li02').css('visibility','hidden');
   $('#li03').css('visibility','hidden');
   setList();
+}
+function csvOut() {
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);          // 文字コードをBOM付きUTF-8に指定
+  var data_csv = "";                                     // ここに文字データとして値を格納していく
+  var table = document.getElementById('topRightTable2'); // header要素を取得
+  for(var i = 0; i < table.rows.length; i++){
+    for(var j = 0; j < table.rows[i].cells.length; j++){
+      data_csv += '"' + table.rows[i].cells[j].innerText + '"'; // HTML中の表のセル値をdata_csvに格納
+      if (j == table.rows[i].cells.length-1) {
+        data_csv += "\n";                                // 行終わりに改行コードを追加
+      } else {
+        data_csv += ",";                                 // セル値の区切り文字として,を追加
+      }
+    }
+  }
+  table = document.getElementById('bottomRightTable2');  // table要素を取得
+  for(var i = 0; i < table.rows.length; i++){
+    for(var j = 0; j < table.rows[i].cells.length; j++){
+      data_csv += '"' + table.rows[i].cells[j].innerText + '"'; // HTML中の表のセル値をdata_csvに格納
+      if (j == table.rows[i].cells.length-1) {
+        data_csv += "\n";                                // 行終わりに改行コードを追加
+      } else {
+        data_csv += ",";                                 // セル値の区切り文字として,を追加
+      }
+    }
+  }  
+  // ダウンロード
+  var blob = new Blob([bom, data_csv], { type: 'text/csv' });
+  if (window.navigator.msSaveBlob) {                     // IEの場合の処理
+    window.navigator.msSaveBlob(blob, "myTable.csv"); 
+ // window.navigator.msSaveOrOpenBlob(blob, "myTable.csv"); // msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+  } else {
+    document.getElementById("download").href = window.URL.createObjectURL(blob);
+  }
+  delete data_csv;                                       // data_csvオブジェクトは消去してメモリを開放
+// alert('CSV出力しました。');
+  return;
 }
 function isDate ( strDate ) {
   if (strDate == '') return true;
