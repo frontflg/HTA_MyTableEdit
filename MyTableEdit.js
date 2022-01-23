@@ -194,9 +194,8 @@ function colPage(tName) {
   }
   $('#tName2').replaceWith('<div id="tName2">' + tName + '</div>');
   $('#tName3').replaceWith('<div id="tName3">' + tName + '</div>');
-  $('#reCol').replaceWith('<input type="button" style="height:27px;" value="再検索" onClick="colPage(\'' + tName + '\')">'
-                      + '　<input type="button" style="height:27px;" value="CSV出力" onClick="csvOut()">');
-                   // + '　<b><a id="download" href="#" onclick="csvOut()">CSVファイルダウンロード</a></b>');
+  $('#reCol').replaceWith('<td id="reCol"><input type="button" style="height:27px;" value="再検索" onClick="colPage(\'' + tName + '\')">'
+                      + '　<input type="button" style="height:27px;" value="CSV出力" onClick="csvOut()"></td>');
   $('#lst02L').replaceWith('<tbody id="lst02L">' + strDocL + '</tbody>');
   $('#lst02R').replaceWith('<tbody id="lst02R">' + strDocR + '</tbody>');
   rs.Close();
